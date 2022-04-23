@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Binance",
+    "icon": "/static/svgs/binance-logo.svg"
+  },
+  {
+    "name": "BTC",
+    "icon": "/static/svgs/binance-logo.svg"
+  },
+  {
+    "name": "Huobi",
+    "icon": "/static/images/e2.png"
+  },
+  {
+    "name": "ETH",
+    "icon": "/static/svgs/eth-icon.svg"
+  },
+  {
+    "name": "Bittrex",
+    "icon": "/static/images/e3.png"
+  },
+  {
+    "name": "HitBit",
+    "icon": "/static/images/e4.png"
+  },
+  {
+    "name": "Bitfinex",
+    "icon": "/static/images/e6.png"
+  },
+  {
+    "name": "Coinbase",
+    "icon": "/static/images/e7.png"
+  },
+  {
+    "name": "Bitstamp",
+    "icon": "/static/images/e8.png"
+  },
+  {
+    "name": "Okex",
+    "icon": "/static/images/e4.png"
+  },
+  {
+    "name": "Poloniex",
+    "icon": "/static/images/poloniex.png"
+  },
+  {
+    "name": "Binance1",
+    "icon": "/static/images/e3.png"
+  },
+  {
+    "name": "CoinbasePro",
+    "icon": "/static/images/e3.png"
+  },
+  {
+    "name": "Kraken",
+    "icon": "/static/images/e6.png"
+  }
+]

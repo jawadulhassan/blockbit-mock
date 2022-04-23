@@ -1,0 +1,178 @@
+version: 2
+jobs:
+
+  build_code_staging:
+    docker:
+      - image: circleci/node:10
+
+    working_directory: ~/blockbit-client-frontend
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+              - v1-dependencies-{{ checksum "package.json" }}
+              - v1-dependencies-
+      - run:
+          name: yarn install
+          command: yarn
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+              - node_modules
+      - run:
+          name: react build
+          command: yarn run build
+      # Cache the dist folder for the deploy job
+      - save_cache:
+          key: v1-build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+              - build
+
+
+  delete_code_staging:
+    machine:
+      enabled: true
+
+    steps:
+      - add_ssh_keys:
+            fingerprints:
+              - $SSH_HOST_FINGERPRINT_STAGING
+
+      - run:
+          name: SSH Remove Frontend
+          command: |
+              ssh $SSH_USER_STAGING@$SSH_HOST_STAGING bash -c '
+                rm -rf /home/ubuntu/blockbit-client-frontend-staging'
+
+
+  deploy_code_staging:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/blockbit-client-frontend
+    user: root
+    steps:
+      - add_ssh_keys:
+            fingerprints:
+              - $SSH_HOST_FINGERPRINT_STAGING
+
+      - restore_cache:
+                key: v1-build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+
+      - run:
+          name: SSH SCP on Staging for copy build
+          command: scp -o StrictHostKeyChecking=no -r ./build/ $SSH_USER_STAGING@$SSH_HOST_STAGING:/home/ubuntu/blockbit-client-frontend-staging
+
+
+
+  build_code_master:
+    docker:
+      - image: circleci/node:10
+
+    working_directory: ~/blockbit-client-frontend
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+              - v1-dependencies-{{ checksum "package.json" }}
+              - v1-dependencies-
+      - run:
+          name: yarn install
+          command: yarn
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+              - node_modules
+      - run:
+          name: react build
+          command: yarn run build
+      # Cache the dist folder for the deploy job
+      - save_cache:
+          key: v1-build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+              - build
+
+
+  delete_code_master:
+    machine:
+      enabled: true
+
+    steps:
+      - add_ssh_keys:
+            fingerprints:
+              - $SSH_HOST_FINGERPRINT_MASTER
+
+      - run:
+          name: SSH Remove Frontend
+          command: |
+              ssh $SSH_USER_MASTER@$SSH_HOST_MASTER bash -c '
+                rm -rf /home/circleci/blockbit-client-frontend-staging'
+
+
+  deploy_code_master:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/blockbit-client-frontend
+    user: root
+    steps:
+      - add_ssh_keys:
+            fingerprints:
+              - $SSH_HOST_FINGERPRINT_MASTER
+
+      - restore_cache:
+                key: v1-build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+
+      - run:
+          name: SSH SCP on Staging for copy build
+          command: scp -o StrictHostKeyChecking=no -r ./build/ $SSH_USER_MASTER@$SSH_HOST_MASTER:/home/circleci/blockbit-client-frontend-staging
+
+
+
+workflows:
+  version: 2
+  build_deploy_develop:
+     jobs:
+      - build_code_staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - delete_code_staging:
+          filters:
+            branches:
+              only:
+                - staging
+          requires:
+            - build_code_staging
+      - deploy_code_staging:
+          filters:
+            branches:
+              only:
+                - staging
+          requires:
+            - delete_code_staging
+
+  build_deploy_master:
+     jobs:
+      - build_code_master:
+          filters:
+            branches:
+              only:
+                - master
+      - delete_code_master:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build_code_master
+      - deploy_code_master:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - delete_code_master

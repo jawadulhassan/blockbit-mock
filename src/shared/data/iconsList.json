@@ -1,0 +1,42 @@
+[
+  {
+    "name": "BTC",
+    "icon": "/static/svgs/btc-icon.svg"
+  },
+  {
+    "name": "USDT",
+    "icon": "/static/svgs/dollar.svg"
+  },
+  {
+    "name": "BNB",
+    "icon": "https://cryptologos.cc/logos/binance-coin-bnb-logo.svg?v=010"
+  },
+  {
+    "name": "BTCUSDT",
+    "icon": "/static/svgs/btc-icon.svg"
+  },
+  {
+    "name": "Binance",
+    "icon": "/static/svgs/btc-icon.svg"
+  },
+  {
+    "name": "ETH",
+    "icon": "/static/svgs/eth-icon.svg"
+  },
+  {
+    "name": "ETHBTC",
+    "icon": "/static/svgs/eth-icon.svg"
+  },
+  {
+    "name": "ETHUSDT",
+    "icon": "/static/svgs/eth-icon.svg"
+  },
+  {
+    "name": "LTC",
+    "icon": "/static/svgs/ltc-icon.svg"
+  },
+  {
+    "name": "XRP",
+    "icon": "/static/svgs/xrp-icon.svg"
+  }
+]

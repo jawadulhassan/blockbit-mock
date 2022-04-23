@@ -1,0 +1,33 @@
+li.nav-item > a {
+  color: black;
+  font-size: 1.1rem;
+  font-weight: 400;
+  cursor: pointer;
+  font-family: Open Sans;
+  line-height: 19px;
+  padding: 17px 15px 14px 17px;
+}
+
+li.nav-item > a.active {
+  color: #1ce0e2;
+}
+
+li.nav-item > a::after {
+  transition: all ease-in-out 0.2s;
+  background: none repeat scroll 0 0 #0d8688;
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 5px;
+  width: 0;
+}
+li.nav-item > a.active::after {
+  transition: all ease-in-out 0.5s;
+  margin-top: 5px;
+  background: none repeat scroll 0 0 #1ce0e2;
+  content: '';
+  display: block;
+  height: 3px;
+  width: 100%;
+}
+
