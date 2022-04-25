@@ -1,9 +1,5 @@
-import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
 
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
-import FirebaseAuthContext from 'shared/contexts/firebaseContext';
 import { ListItems, SideBarNav, AsideWrapper } from 'shared/commonStyles';
 
 import NavOptions from '../../../components/widgets/NavOptions';
@@ -13,28 +9,14 @@ import TabList from './TabList';
 function Aside(props) {
   const { selectedTab, setSelectedTab } = props;
 
-  const history = useHistory();
-  let firebaseAuth = useContext(FirebaseAuthContext);
-
   function handleClick(event, route) {
     event.preventDefault();
     setSelectedTab(route);
   }
 
   function handleLogout() {
-    firebaseAuth.signOut();
-    return new Promise(function () {
-      setTimeout(function () {
-        clearAuthData();
-      }, 1000);
-    });
+    console.log('Logout');
   }
-
-  const clearAuthData = () => {
-    localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-    localStorage.setItem(StorageConstants.USER_DATA, '');
-    history.push(ROUTE_CONSTANTS.LOGIN);
-  };
 
   return (
     <AsideWrapper>

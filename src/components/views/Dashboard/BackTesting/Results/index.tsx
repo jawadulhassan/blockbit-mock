@@ -102,7 +102,7 @@ const ResultsBacktesting: FC<any> = (): any => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleModal = (): any => setIsModalOpen(!isModalOpen);
-
+ 
   return (
     <ScreenWrapper>
       <ScreenHeader header="Results" />

@@ -31,9 +31,9 @@ const StepHandler: FC<any> = (props: any): any => {
 const BackTesting: FC<{}> = (): any => {
   const [selectedStep, setSelectedStep] = useState(1);
   const [userQuota, setUserQuota] = useState({
-    usedTests: 0,
-    availableTests: 0,
-    allowedMaxTests: 0,
+    usedTests: 5,
+    availableTests: 15,
+    allowedMaxTests: 10,
   });
   return (
     <ScreenWrapper>

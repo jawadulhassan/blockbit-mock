@@ -1,12 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import capitalize from 'lodash/capitalize';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
-import FirebaseAuthContext from 'shared/contexts/firebaseContext';
-import { userNotificationsEndpoint } from 'shared/endPoints';
 import {
   FlexRow,
   FreeIcon,
@@ -23,56 +18,19 @@ import Button from 'components/widgets/Button';
 
 import Notifications from '../Notifications';
 
-function AuthHeader({ user, selectedTab }) {
-  const history = useHistory();
-  let firebaseAuth = useContext(FirebaseAuthContext);
-
+function AuthHeader({ selectedTab }) {
   const [notificationList, setNotificationList] = useState([]);
   const [displayNotifications, setDisplayNotifications] = useState(false);
   const [hasUnReadNotifications, setHasUnReadNotifications] = useState(false);
-
-  useEffect(() => {
-    getUserNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTab]);
 
   const toggleNotifications = () =>
     setDisplayNotifications(!displayNotifications);
 
   const handleLogout = () => {
-    firebaseAuth.signOut();
-    return new Promise(function () {
-      setTimeout(function () {
-        clearAuthData();
-      }, 1000);
-    });
+    console.log('Logout!!');
   };
 
-  const clearAuthData = () => {
-    localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-    localStorage.setItem(StorageConstants.USER_DATA, '');
-    history.push(ROUTE_CONSTANTS.LOGIN);
-  };
-
-  const getUserNotifications = () => {
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    apiClient(userToken)
-      .get(`${userNotificationsEndpoint}?externalUserId=${clientId}`)
-      .then((response) => {
-        const list = response?.data?.data?.records;
-        const isUnRead = list?.some((item) => item.isSeen === false);
-        setNotificationList(list);
-        setHasUnReadNotifications(isUnRead);
-      })
-      .catch(() => {});
-  };
-
-  const userData = localStorage.getItem(StorageConstants.USER_DATA);
-  const userName = !!userData && JSON.parse(userData).name;
-  const photoSrc = localStorage.getItem(StorageConstants.USER_PHOTO) || '';
+  console.log(setNotificationList, setHasUnReadNotifications);
 
   return (
     <AuthHeaderFixed>
@@ -111,9 +69,9 @@ function AuthHeader({ user, selectedTab }) {
             e.target.onerror = null;
             e.target.src = 'static/svgs/avataaars.svg';
           }}
-          src={photoSrc || 'static/svgs/avataaars.svg'}
+          src={'static/svgs/avataaars.svg'}
         />
-        <ListOfUsers>{userName}</ListOfUsers>
+        <ListOfUsers>Jones</ListOfUsers>
         <FreeIcon src="static/svgs/free.svg" alt="icon-free" />
         <Button label="Log out" marginLeft="15px" onClick={handleLogout} />
       </AuthFlexContainer>
@@ -122,7 +80,7 @@ function AuthHeader({ user, selectedTab }) {
           notificationList={notificationList}
           toggleNotifications={toggleNotifications}
           displayNotifications={displayNotifications}
-          getUserNotifications={getUserNotifications}
+          getUserNotifications={() => console.log('Notification read!!')}
         />
       )}
     </AuthHeaderFixed>

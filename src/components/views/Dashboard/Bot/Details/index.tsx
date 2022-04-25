@@ -1,12 +1,7 @@
-import React, { useState, FC, useRef, useEffect, Fragment } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, FC, Fragment } from 'react';
 
 import { FlexRow } from 'shared/commonStyles';
-import { apiClient } from 'shared/services/api';
-import { getBotDetailsEndpoint } from 'shared/endPoints';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
 import { tradeOrdersGeneratorTable } from 'shared/helpers';
-import StorageConstants from 'shared/constants/StorageConstants';
 
 import Loader from 'components/widgets/Loader';
 import TopStatsBar from 'components/widgets/TopStatsBar';
@@ -21,52 +16,40 @@ const BotDetails: FC<any> = ({
   selectedMarket,
   setSelectedStep,
 }: any): any => {
-  const history = useHistory();
-  const unmounted = useRef(false);
-
   const [isLoading, setIsLoading] = useState(false);
   const [dataObj, setDataObj] = useState({
-    openOrders: [],
-    closedOrders: [],
+    openOrders: [{
+      fee: 5,
+      pnl: 2.02,
+      pair: "Buy",
+      buyDate: 39000,
+      sellDate: 42000,
+      exchange: 'Binance',
+      buyPrice: 42000,
+      sellPrice: 39000,
+  }],
+    closedOrders: [{
+        fee: 5,
+        pnl: 2.02,
+        pair: "Buy",
+        buyDate: 39000,
+        sellDate: 42000,
+        exchange: 'Binance',
+        buyPrice: 42000,
+        sellPrice: 39000,
+    }],
     algoTradingGridStrategy: {
-      tickerPrice: 0,
-      maxThreshold: 0,
-      minThreshold: 0,
-      numberOfIntervals: 0,
-      totalAllocatedAmount: 0,
+      tickerPrice: 23,
+      maxThreshold: 11,
+      minThreshold: 2,
+      numberOfIntervals: 5,
+      totalAllocatedAmount: 999.99,
     },
   });
 
-  useEffect((): any => {
-    getBotDetails(selectedBot);
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBot]);
+  console.log({dataObj})
+  console.log(setIsLoading, setDataObj);
 
-  async function getBotDetails(botId): Promise<void> {
-    setIsLoading(true);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    apiClient(userToken)
-      .get(`${getBotDetailsEndpoint}?algoTradingPlanID=${botId}`)
-      .then((response: any): any => {
-        if (!unmounted.current) {
-          setDataObj(response?.data?.data);
-          setIsLoading(false);
-        }
-      })
-      .catch((err: any): any => {
-        if (!unmounted.current) {
-          setIsLoading(false);
-          if (err.response.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
 
   const {
     openOrders,

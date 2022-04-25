@@ -38,9 +38,6 @@ const BackTesting: FC<any> = ({
   setUserQuota,
   setSelectedStep,
 }: any): any => {
-  const history = useHistory();
-  let firebaseAuth: any = {};
-  firebaseAuth = useContext(FirebaseAuthContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [displayResult, setDisplayResult] = useState('');
@@ -50,78 +47,10 @@ const BackTesting: FC<any> = ({
   });
   const [backtestHistory, setBacktestHistory] = useState([]);
 
-  useEffect((): void => {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
 
-    getTestQuota(userToken, user);
-    getBackTestHistory(userToken, user);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getTestQuota(token: any, user: any): Promise<any> {
-    apiClient(token)
-      .get(`${getTestQuotaInfoEndpoint}?id=${user.userId}`)
-      .then((response: any): any => {
-        const quota = response?.data?.data?.records[0];
-        setUserQuota(quota);
-        setIsLoading(false);
-      })
-      .catch((err: any): any => {
-        if (err.response.status === 401) {
-          setIsLoading(false);
-          firebaseAuth?.signOut();
-          localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-          localStorage.setItem(StorageConstants.USER_DATA, '');
-          history.push(ROUTE_CONSTANTS.LOGIN);
-        }
-      });
-  }
-
-  async function getBackTestHistory(
-    token: any,
-    user: any,
-    params: any = null
-  ): Promise<any> {
-    apiClient(token)
-      .get(
-        `${getBackTestHistoryEndpoint}?client_id=${user.userId}&isascending_sort_order=false&${params}`
-      )
-      .then((response: any): any => {
-        const list = response?.data?.data?.records;
-        setBacktestHistory(list);
-        setIsLoading(false);
-      })
-      .catch((err: any): any => {
-        if (err.response.status === 401) {
-          setIsLoading(false);
-          firebaseAuth?.signOut();
-          localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-          localStorage.setItem(StorageConstants.USER_DATA, '');
-          history.push(ROUTE_CONSTANTS.LOGIN);
-        }
-      });
-  }
 
   const handleSearch = () => {
-    if (selectedFilter.value === '') {
-      const userData = localStorage.getItem(StorageConstants.USER_DATA);
-      const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-      const user = !!userData && JSON.parse(userData);
 
-      getBackTestHistory(userToken, user);
-      return;
-    }
-    const queryParam = `${selectedFilter.filter}=${selectedFilter.value}`;
-
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-
-    getBackTestHistory(userToken, user, queryParam);
   };
 
   return (
