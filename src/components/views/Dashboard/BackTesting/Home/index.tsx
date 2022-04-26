@@ -1,16 +1,10 @@
-import React, { useState, FC, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, FC } from 'react';
 
-import { apiClient } from 'shared/services/api';
 import { shapeDataFormatter } from 'shared/helpers';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
-import FirebaseAuthContext from 'shared/contexts/firebaseContext';
 import {
-  getTestQuotaInfoEndpoint,
-  getBackTestHistoryEndpoint,
-  getIndividualTestResultEndpoint,
-} from 'shared/endPoints';
+  mockBacktesting,
+  mockIndividualTests,
+} from 'shared/mockData/backtestHistory';
 import {
   FlexRow,
   FlexColumn,
@@ -38,20 +32,15 @@ const BackTesting: FC<any> = ({
   setUserQuota,
   setSelectedStep,
 }: any): any => {
-
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [displayResult, setDisplayResult] = useState('');
   const [selectedFilter, setSelectedFilter] = useState({
     filter: '',
     value: '',
   });
-  const [backtestHistory, setBacktestHistory] = useState([]);
+  const [backtestHistory] = useState(mockBacktesting);
 
-
-
-  const handleSearch = () => {
-
-  };
+  const handleSearch = () => {};
 
   return (
     <ScreenWrapper>
@@ -145,33 +134,11 @@ const IndividualTest: FC<any> = ({
     (item: any): any => item.resultID === resultId
   );
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [individualData, setIndividualData] = useState({
-    netProfitLoss: 0,
-    trades: [],
+  const [isLoading] = useState(false);
+  const [individualData] = useState({
+    netProfitLoss: 4,
+    trades: mockIndividualTests,
   });
-
-  useEffect((): void => {
-    setIsLoading(true);
-    getIndividualTestData(resultId);
-  }, [resultId]);
-
-  async function getIndividualTestData(id: any): Promise<any> {
-    apiClient('')
-      .get(`${getIndividualTestResultEndpoint}?id=${id}`)
-      .then((response: any): any => {
-        const data = response?.data?.data?.record;
-        setIndividualData(data);
-        setIsLoading(false);
-      })
-      .catch((err: any): any => {
-        if (err.response.status === 401) {
-          setIsLoading(false);
-          localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-          localStorage.setItem(StorageConstants.USER_DATA, '');
-        }
-      });
-  }
 
   const plotData = shapeDataFormatter(individualData.trades);
   return (
