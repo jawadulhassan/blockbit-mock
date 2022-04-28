@@ -59,10 +59,15 @@ const BackTesting: FC<any> = ({
   const { handleSubmit, register, errors } = useForm();
 
   const [riskValue, setRiskValue] = useState(100);
-  const [marketList] = useState([]);
+  const [marketList] = useState(['BTC', 'USDT', 'ETH', 'POL']);
   const [isLoading, setIsLoading] = useState(false);
-  const [strategyList] = useState([]);
-  const [exchangeList] = useState([]);
+  const [strategyList] = useState(['BTC', 'USDT', 'ETH', 'POL']);
+  const [exchangeList] = useState([
+    'Binance',
+    'Bitfinix',
+    'Houbai',
+    'Ethereum',
+  ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
 
@@ -87,7 +92,9 @@ const BackTesting: FC<any> = ({
     }
     setIsLoading(true);
 
-    const user = 1;
+    const user = {
+      userId: 7,
+    };
     const {
       amount,
       market,
@@ -145,6 +152,7 @@ const BackTesting: FC<any> = ({
       setIsLoading(false);
       setSelectedStep(1);
     }
+    console.log('requestBody: ', requestBody);
   };
 
   const exchangeHandler = (event: any): void => {
