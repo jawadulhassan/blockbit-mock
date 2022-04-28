@@ -1,13 +1,9 @@
-import React, { useState, FC, useEffect } from 'react';
+import React, { useState, FC } from 'react';
 import { Label } from 'reactstrap';
 // import isEmpty from 'lodash/isEmpty';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 import { useToasts } from 'react-toast-notifications';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
 import { getNamesFromList, getSelectedItemIdFromList } from 'shared/helpers';
 import {
   FlexRow,
@@ -16,12 +12,6 @@ import {
   ErrorMessage,
   ScreenWrapper,
 } from 'shared/commonStyles';
-import {
-  createBacktestEndpoint,
-  getAvailableMarketsEndpoint,
-  getAvailableExchangesEndpoint,
-  getAvailableStrategiesEndpoint,
-} from 'shared/endPoints';
 
 import Button from 'components/widgets/Button';
 import Loader from 'components/widgets/Loader';
@@ -65,64 +55,19 @@ const BackTesting: FC<any> = ({
   selectedStep,
   setSelectedStep,
 }: any): any => {
-  const history = useHistory();
   const { addToast } = useToasts();
   const { handleSubmit, register, errors } = useForm();
 
   const [riskValue, setRiskValue] = useState(100);
-  const [marketList, setMarketList] = useState([]);
+  const [marketList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [strategyList, setStrategyList] = useState([]);
-  const [exchangeList, setExchangeList] = useState([]);
+  const [strategyList] = useState([]);
+  const [exchangeList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
 
-  useEffect((): void => {
-    getAvailableExchangeList();
-    getAvailableStrategyList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getAvailableExchangeList(): Promise<any> {
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    apiClient(userToken)
-      .get(getAvailableExchangesEndpoint)
-      .then((response: any): any => {
-        const list = response?.data?.data?.records;
-        if (list) {
-          setExchangeList(list);
-          getAvailableMarketList(list[0].exchangeID);
-        }
-      })
-      .catch((err: any): any => {
-        if (err.response.status === 401) {
-          localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-          localStorage.setItem(StorageConstants.USER_DATA, '');
-          history.push(ROUTE_CONSTANTS.LOGIN);
-        }
-      });
-  }
-
   async function getAvailableMarketList(exchangeId: any): Promise<any> {
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const response = await apiClient(userToken).get(
-      `${getAvailableMarketsEndpoint}?id=${exchangeId}`
-    );
-    const list = !!response && response?.data?.data?.records;
-    if (list) {
-      setMarketList(list);
-    }
-  }
-
-  async function getAvailableStrategyList(): Promise<any> {
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const response = await apiClient(userToken).get(
-      getAvailableStrategiesEndpoint
-    );
-    const list = !!response && response?.data?.data?.records;
-    if (list) {
-      setStrategyList(list);
-    }
+    console.log('getAvailableMarketList: ', exchangeId);
   }
 
   function notificationHandler(content: any, type: any = 'info'): any {
@@ -142,9 +87,7 @@ const BackTesting: FC<any> = ({
     }
     setIsLoading(true);
 
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
+    const user = 1;
     const {
       amount,
       market,
@@ -197,27 +140,11 @@ const BackTesting: FC<any> = ({
       highBound: Number(highBound),
     };
     if (userQuota?.availableTests < 1) {
+      console.log('requestBody: ', requestBody);
       notificationHandler('You have exhausted your quota.', 'error');
       setIsLoading(false);
       setSelectedStep(1);
     }
-
-    apiClient(userToken)
-      .post(createBacktestEndpoint, requestBody)
-      .then((response: any): void => {
-        // console.log({ response });
-        toggleModal();
-        setIsLoading(false);
-        notificationHandler(
-          'Your BackTest has been queued, successfully.',
-          'success'
-        );
-      })
-      .catch((err: any): void => {
-        const errorMessage = err?.response?.data?.message;
-        setIsLoading(false);
-        notificationHandler(errorMessage, 'error');
-      });
   };
 
   const exchangeHandler = (event: any): void => {
