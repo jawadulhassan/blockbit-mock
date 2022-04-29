@@ -4,7 +4,6 @@ import { Label } from 'reactstrap';
 import { useForm } from 'react-hook-form';
 import { useToasts } from 'react-toast-notifications';
 
-import { getNamesFromList, getSelectedItemIdFromList } from 'shared/helpers';
 import {
   FlexRow,
   BolderText,
@@ -60,8 +59,8 @@ const BackTesting: FC<any> = ({
 
   const [riskValue, setRiskValue] = useState(100);
   const [marketList] = useState(['BTC', 'USDT', 'ETH', 'POL']);
-  const [isLoading, setIsLoading] = useState(false);
-  const [strategyList] = useState(['BTC', 'USDT', 'ETH', 'POL']);
+  const [isLoading] = useState(false);
+  const [strategyList] = useState(['Grid']);
   const [exchangeList] = useState([
     'Binance',
     'Bitfinix',
@@ -70,10 +69,6 @@ const BackTesting: FC<any> = ({
   ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
-
-  async function getAvailableMarketList(exchangeId: any): Promise<any> {
-    console.log('getAvailableMarketList: ', exchangeId);
-  }
 
   function notificationHandler(content: any, type: any = 'info'): any {
     addToast(content, {
@@ -90,7 +85,6 @@ const BackTesting: FC<any> = ({
       setIsDateError(true);
       return;
     }
-    setIsLoading(true);
 
     const user = {
       userId: 7,
@@ -104,19 +98,20 @@ const BackTesting: FC<any> = ({
       startDate,
       exchange: selectedExchange,
     } = values;
-    const foundMarket = getSelectedItemIdFromList(
-      marketList,
+    const foundMarket = {
+      marketID: 4,
+      marketType: 'Binance',
       market,
-      'instrumentsymbolcode'
-    );
+      instrumentsymbolcode: 'BTC',
+    };
     const marketID = foundMarket.marketID;
     const marketType = String(foundMarket.marketType);
     const instrumentsymbolcode = foundMarket.instrumentsymbolcode;
-    const foundExchange = getSelectedItemIdFromList(
-      exchangeList,
+    const foundExchange = {
+      exchangeID: 4,
       selectedExchange,
-      'description'
-    );
+    };
+
     const status = 1;
     const requestID = 0;
     const tradingStrategy = 1;
@@ -149,21 +144,13 @@ const BackTesting: FC<any> = ({
     if (userQuota?.availableTests < 1) {
       console.log('requestBody: ', requestBody);
       notificationHandler('You have exhausted your quota.', 'error');
-      setIsLoading(false);
-      setSelectedStep(1);
     }
     console.log('requestBody: ', requestBody);
-  };
-
-  const exchangeHandler = (event: any): void => {
-    const { value } = event.target;
-    const foundExchange = getSelectedItemIdFromList(
-      exchangeList,
-      value,
-      'description'
+    notificationHandler(
+      'Your BackTest has been queued, successfully.',
+      'success'
     );
-
-    getAvailableMarketList(foundExchange.exchangeID);
+    setSelectedStep(1);
   };
 
   const date = new Date();
@@ -175,9 +162,6 @@ const BackTesting: FC<any> = ({
     .reverse()
     .join('-');
 
-  const STRATEGY_LIST = getNamesFromList(strategyList, 'name');
-  const EXCHANGE_LIST = getNamesFromList(exchangeList, 'description');
-  const MARKET_LIST = getNamesFromList(marketList, 'instrumentsymbolcode');
   return (
     <ScreenWrapper>
       <ScreenHeader
@@ -206,16 +190,17 @@ const BackTesting: FC<any> = ({
               width="48%"
               name="exchange"
               label="Exchange"
-              onChange={(event: any): any => exchangeHandler(event)}
-              options={EXCHANGE_LIST}
               register={register}
+              options={exchangeList}
+              value={exchangeList[0]}
             />
             <Dropdown
               width="48%"
               name="strategy"
               label="Strategy"
-              options={STRATEGY_LIST}
               register={register}
+              options={strategyList}
+              value={strategyList[0]}
             />
           </FlexRow>
           <FlexRow width="85%" marginTop="30px" justifyContent="space-between">
@@ -223,8 +208,9 @@ const BackTesting: FC<any> = ({
               width="48%"
               name="market"
               label="Market"
-              options={MARKET_LIST}
               register={register}
+              options={marketList}
+              value={marketList[0]}
             />
             <FlexColumn width="48%">
               <TextInput

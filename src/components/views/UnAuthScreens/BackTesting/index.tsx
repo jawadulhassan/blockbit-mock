@@ -1,7 +1,10 @@
-import React, { useState, FC, Fragment, useEffect } from 'react';
+import React, { useState, FC, Fragment } from 'react';
 
 import { shapeDataFormatter } from 'shared/helpers';
-import { mockBacktesting, mockIndividualTests } from 'shared/mockData/backtestHistory';
+import {
+  mockBacktesting,
+  mockIndividualTests,
+} from 'shared/mockData/backtestHistory';
 import {
   FlexRow,
   LightText,
@@ -32,7 +35,7 @@ const BackTesting: FC<any> = (): any => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const toggleModal = (): any => setIsModalOpen(!isModalOpen);
-  const toggleShareModal = (): any => setIsShareModalOpen(!isShareModalOpen)
+  const toggleShareModal = (): any => setIsShareModalOpen(!isShareModalOpen);
 
   return (
     <Fragment>

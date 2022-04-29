@@ -27,11 +27,7 @@ import PNLTable from './PNLTable';
 import SummaryTable from './SummaryTable';
 import HistoryTable from './HistoryTable';
 
-const BackTesting: FC<any> = ({
-  userQuota,
-  setUserQuota,
-  setSelectedStep,
-}: any): any => {
+const BackTesting: FC<any> = ({ userQuota, setSelectedStep }: any): any => {
   const [isLoading] = useState(false);
   const [displayResult, setDisplayResult] = useState('');
   const [selectedFilter, setSelectedFilter] = useState({
@@ -40,7 +36,13 @@ const BackTesting: FC<any> = ({
   });
   const [backtestHistory] = useState(mockBacktesting);
 
-  const handleSearch = () => {};
+  const handleSearch = () => {
+    if (selectedFilter.value === '') {
+      return;
+    }
+    const queryParam = `${selectedFilter.filter}=${selectedFilter.value}`;
+    console.log({ queryParam });
+  };
 
   return (
     <ScreenWrapper>

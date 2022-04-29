@@ -7,14 +7,13 @@ import Home from './Home';
 import Results from './Results';
 
 const StepHandler: FC<any> = (props: any): any => {
-  const { userQuota, selectedStep, setUserQuota, setSelectedStep } = props;
+  const { userQuota, selectedStep, setSelectedStep } = props;
   switch (selectedStep) {
     case 1:
       return (
         <Home
           {...{
             userQuota,
-            setUserQuota,
             setSelectedStep,
           }}
         />
@@ -30,7 +29,7 @@ const StepHandler: FC<any> = (props: any): any => {
 
 const BackTesting: FC<{}> = (): any => {
   const [selectedStep, setSelectedStep] = useState(1);
-  const [userQuota, setUserQuota] = useState({
+  const [userQuota] = useState({
     usedTests: 5,
     availableTests: 15,
     allowedMaxTests: 10,
@@ -41,7 +40,6 @@ const BackTesting: FC<{}> = (): any => {
         {...{
           userQuota,
           selectedStep,
-          setUserQuota,
           setSelectedStep,
         }}
       />
