@@ -1,5 +1,4 @@
 import React from 'react';
-import { format } from 'date-fns';
 import Highcharts from 'highcharts/highcharts.src.js';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsExporting from 'highcharts/modules/exporting';
@@ -8,7 +7,18 @@ if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
 
-function AverageProfitPercentage({ categories, data }) {
+const dataset = {
+  xData: [
+    '2020-10-01T19:30:00.000Z',
+    '2020-10-02T19:30:00.000Z',
+    '2020-10-03T19:30:00.000Z',
+    '2020-10-04T19:30:00.000Z',
+    '2020-10-05T19:30:00.000Z',
+  ],
+  data: [4, 2, 3, 1, 5],
+};
+
+function AverageProfitPercentage() {
   const profitChartOptions = {
     chart: {
       type: 'column',
@@ -23,9 +33,9 @@ function AverageProfitPercentage({ categories, data }) {
       enabled: false,
     },
     xAxis: {
-      categories: categories.map((item) =>
-        format(new Date(item * 1000), 'MMM d')
-      ),
+      categories: dataset.xData.map((date) => {
+        return Highcharts.dateFormat('%Y-%m-%d', new Date(date).getTime());
+      }),
       crosshair: true,
     },
     yAxis: {
@@ -60,7 +70,7 @@ function AverageProfitPercentage({ categories, data }) {
         borderRadiusTopLeft: 12,
         borderRadiusTopRight: 12,
         name: 'Profits',
-        data: data,
+        data: dataset.data,
       },
     ],
   };
