@@ -1,5 +1,4 @@
 import React from 'react';
-import { format } from 'date-fns';
 import Highcharts from 'highcharts/highcharts.src.js';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsExporting from 'highcharts/modules/exporting';
@@ -7,6 +6,18 @@ import HighchartsExporting from 'highcharts/modules/exporting';
 if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
+
+const dataset = {
+  xData: [
+    '2020-10-01T19:30:00.000Z',
+    '2020-10-02T19:30:00.000Z',
+    '2020-10-03T19:30:00.000Z',
+    '2020-10-03T19:30:00.000Z',
+    '2020-10-03T19:30:00.000Z',
+    '2020-10-04T19:30:00.000Z',
+    '2020-10-05T19:30:00.000Z',
+  ],
+};
 
 function PNLGraph({ heightProp = '250px', chartData }) {
   const chartOptions = {
@@ -25,12 +36,9 @@ function PNLGraph({ heightProp = '250px', chartData }) {
       text: null,
     },
     xAxis: {
-      type: 'datetime',
-      labels: {
-        formatter: function () {
-          return format(new Date(this.value * 1000), 'yyyy-MM-dd');
-        },
-      },
+      categories: dataset.xData.map((date) => {
+        return Highcharts.dateFormat('%Y-%m-%d', new Date(date).getTime());
+      }),
     },
     yAxis: {
       lineWidth: 1,
