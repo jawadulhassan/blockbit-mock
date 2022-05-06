@@ -1,14 +1,15 @@
 import React from 'react';
-import { format } from 'date-fns';
 import Highcharts from 'highcharts/highcharts.src.js';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsExporting from 'highcharts/modules/exporting';
+
+import { dataset } from 'shared/mockData/pie';
 
 if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
 
-function MarketTradesByWeek({ categories, data }) {
+function MarketTradesByWeek() {
   const chartOptions = {
     chart: {
       type: 'column',
@@ -23,9 +24,9 @@ function MarketTradesByWeek({ categories, data }) {
       enabled: false,
     },
     xAxis: {
-      categories: categories.map((item) =>
-        format(new Date(item * 1000), 'eeee')
-      ),
+      categories: dataset.xData.map((date) => {
+        return Highcharts.dateFormat('%Y-%m-%d', new Date(date).getTime());
+      }),
       crosshair: true,
     },
     plotOptions: {
@@ -55,7 +56,7 @@ function MarketTradesByWeek({ categories, data }) {
     series: [
       {
         name: 'Trades',
-        data: data,
+        data: dataset.data,
         borderRadiusTopLeft: '20px',
         borderRadiusTopRight: '20px',
       },

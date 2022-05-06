@@ -8,7 +8,12 @@ if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
 
-function PieChart({ data }) {
+const data = {
+  data: [4, 2, 3, 7, 1, 5, 3],
+  tileValue: 217093,
+};
+
+function PieChart() {
   const investmentByMarketData = [
     {
       name: 'Exchanges',
@@ -42,14 +47,18 @@ function PieChart({ data }) {
     tooltip: {
       pointFormat: '<b>{point.y:.1f}</b>',
     },
+    // legend: {
+    //   enabled: true,
+    //   align: 'right',
+    //   verticalAlign: 'center',
+    //   layout: 'vertical',
+    //   x: 0,
+    //   y: 150,
+    // },
     legend: {
-      enabled: true,
-      align: 'right',
-      verticalAlign: 'center',
-      layout: 'vertical',
-      x: 0,
-      y: 150,
+      enabled: false,
     },
+
     plotOptions: {
       pie: {
         innerSize: '60%',
@@ -63,13 +72,20 @@ function PieChart({ data }) {
           '#1395BA',
           '#5CA793',
         ],
+        // dataLabels: {
+        //   enabled: true,
+        //   format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+        //   style: {
+        //     textShadow: false,
+        //     color: '#212833',
+        //     textOutline: false,
+        //   },
+        // },
         dataLabels: {
           enabled: true,
-          format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-          style: {
-            textShadow: false,
-            color: '#212833',
-            textOutline: false,
+          formatter: function () {
+            this.point.percentage = this.percentage;
+            return Highcharts.numberFormat(this.percentage, 0) + '%';
           },
         },
         showInLegend: true,

@@ -1,13 +1,7 @@
-import React, { useState, Fragment, FC, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, Fragment, FC } from 'react';
 import { useToasts } from 'react-toast-notifications';
 
-import { apiClient } from 'shared/services/api';
-
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
-import { stopBotEndpoint, getUserBotsEndpoint } from 'shared/endPoints';
-
+import { mockDashboard } from 'shared/mockData/dashboard';
 import { FlexRow, BolderText } from 'shared/commonStyles';
 
 import Loader from 'components/widgets/Loader';
@@ -16,52 +10,14 @@ import DeleteBot from 'components/modals/DeleteBot';
 import FullPageLoader from 'components/widgets/ContentLoaders/FullPageLoading';
 
 const BotListing: FC<any> = (): any => {
-  const history = useHistory();
-  const unmounted = useRef(false);
-
-  const [dataList, setDataList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect((): any => {
-    getAddedBotList();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getAddedBotList(): Promise<void> {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    apiClient(userToken)
-      .get(`${getUserBotsEndpoint}?externalUserId=${clientId}`)
-      .then((response: any): any => {
-        if (!unmounted.current) {
-          const list = response?.data?.data?.records;
-          setDataList(list);
-          setIsLoading(false);
-        }
-      })
-      .catch((err: any): any => {
-        if (!unmounted.current) {
-          setIsLoading(false);
-          if (err?.response?.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
+  const [dataList] = useState(mockDashboard);
+  const [isLoading] = useState(false);
 
   if (isLoading) return <FullPageLoader />;
-  return <Table botTableData={dataList} getAddedBotList={getAddedBotList} />;
+  return <Table botTableData={dataList} />;
 };
 
-const Table: FC<any> = ({ botTableData, getAddedBotList }): any => {
+const Table: FC<any> = ({ botTableData }): any => {
   if (!botTableData) return null;
   return (
     <div className="table-responsive mt-4">
@@ -111,7 +67,6 @@ const Table: FC<any> = ({ botTableData, getAddedBotList }): any => {
                         investment,
                         daysRunning,
                         tradingStrategy,
-                        getAddedBotList,
                         algoTradingPlanID,
                       }}
                     />
@@ -141,7 +96,7 @@ const TableRow: FC<any> = (props: any): any => {
   const { addToast } = useToasts();
 
   const [rowChecked, setRowChecked] = useState(false);
-  const [isStopping, setIsStopping] = useState(false);
+  const [isStopping] = useState(false);
   const [selectedRow, setSelectedRow] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
@@ -154,28 +109,8 @@ const TableRow: FC<any> = (props: any): any => {
 
   const handleStopBot = (event, id) => {
     event.stopPropagation();
-    setIsStopping(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const requestBody = {
-      algoTradingPlanID: id,
-      externalUserId: user.userId,
-    };
-    apiClient(userToken)
-      .post(stopBotEndpoint, requestBody)
-      .then((): void => {
-        setIsStopping(false);
-        notificationHandler(
-          'Your bot has been stopped, successfully.',
-          'success'
-        );
-      })
-      .catch((err: any): void => {
-        const errorMessage = err.response.data.message;
-        setIsStopping(false);
-        notificationHandler(errorMessage, 'error');
-      });
+    notificationHandler('Your bot has been stopped, successfully.', 'success');
+    console.log('handleStopBot', id);
   };
 
   const toggleDeleteModal = (): void => setOpenDeleteModal(!openDeleteModal);
@@ -206,7 +141,7 @@ const TableRow: FC<any> = (props: any): any => {
         <td>{exchange}</td>
         <td>{daysRunning}</td>
         <td>{market}</td>
-        <td>{`${investment.toFixed(8)}`}</td>
+        <td>{`${investment.toFixed(2)}`}</td>
         <td>
           <span
             style={{
