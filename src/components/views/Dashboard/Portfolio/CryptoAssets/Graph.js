@@ -4,6 +4,8 @@ import Highcharts from 'highcharts/highcharts.src.js';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsExporting from 'highcharts/modules/exporting';
 
+import { dataset } from 'shared/mockData/portfolio';
+
 if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
@@ -25,12 +27,10 @@ function AssetsGraph({ heightProp = '250px', chartData }) {
       enabled: false,
     },
     xAxis: {
-      type: 'datetime',
-      labels: {
-        formatter: function () {
-          return format(new Date(this.value * 1000), 'hh:mm | dd-MM');
-        },
-      },
+      categories: dataset.xData.map((date) => {
+        return Highcharts.dateFormat('%Y-%m-%d', new Date(date).getTime());
+      }),
+      crosshair: true,
     },
     tooltip: {
       formatter: function () {
@@ -87,7 +87,7 @@ function AssetsGraph({ heightProp = '250px', chartData }) {
     series: [
       {
         type: 'area',
-        data: chartData,
+        data: dataset.data,
       },
     ],
   };

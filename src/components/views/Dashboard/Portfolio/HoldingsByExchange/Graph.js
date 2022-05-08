@@ -8,7 +8,12 @@ if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
 
-function PieChart({ data }) {
+const data = {
+  data: [4, 2, 3, 3, 1, 7, 3],
+  tileValue: 517093.65,
+};
+
+function PieChart() {
   const investmentByMarketData = [
     {
       name: 'Exchanges',
@@ -35,7 +40,7 @@ function PieChart({ data }) {
       text: `<b style="font-family: Open Sans;font-style: normal;font-weight: bold;font-size: 24px;line-height: 33px;color: #041F60;">$${parseFloat(
         data?.tileValue
       ).toFixed(
-        6
+        2
       )}</b><br/><br/><p style="font-family: Open Sans; font-style: normal; font-weight: normal; font-size: 18px; line-height: 25px;color: #041F60;">Investment</p>`,
       verticalAlign: 'middle',
       floating: true,
@@ -46,14 +51,18 @@ function PieChart({ data }) {
     tooltip: {
       pointFormat: '<b>{point.y:.1f}</b>',
     },
+    // legend: {
+    //   enabled: true,
+    //   align: 'right',
+    //   verticalAlign: 'center',
+    //   layout: 'vertical',
+    //   x: 0,
+    //   y: 150,
+    // },
     legend: {
-      enabled: true,
-      align: 'right',
-      verticalAlign: 'center',
-      layout: 'vertical',
-      x: 0,
-      y: 150,
+      enabled: false,
     },
+
     plotOptions: {
       pie: {
         innerSize: '60%',
@@ -67,13 +76,20 @@ function PieChart({ data }) {
           '#1395BA',
           '#5CA793',
         ],
+        // dataLabels: {
+        //   enabled: true,
+        //   format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+        //   style: {
+        //     textShadow: false,
+        //     color: '#212833',
+        //     textOutline: false,
+        //   },
+        // },
         dataLabels: {
           enabled: true,
-          format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-          style: {
-            textShadow: false,
-            color: '#212833',
-            textOutline: false,
+          formatter: function () {
+            this.point.percentage = this.percentage;
+            return Highcharts.numberFormat(this.percentage, 0) + '%';
           },
         },
         showInLegend: true,

@@ -1,19 +1,23 @@
 import React from 'react';
 import Highcharts from 'highcharts/highcharts.src.js';
 import HighchartsReact from 'highcharts-react-official';
-
 import HighchartsExporting from 'highcharts/modules/exporting';
 
 if (typeof Highcharts === 'object') {
   HighchartsExporting(Highcharts);
 }
 
-function PieChart({ list }) {
+const data = {
+  data: [4, 2, 3, 7, 1, 5, 3],
+  tileValue: 217093,
+};
+
+function PieChart() {
   const tradeByMarketsData = [
     {
       name: 'Exchanges',
       colorByPoint: true,
-      data: list,
+      data: data?.data,
       point: {
         events: {
           click: function () {
@@ -41,13 +45,16 @@ function PieChart({ list }) {
     tooltip: {
       pointFormat: '<b>{point.y:.1f} BTC</b>',
     },
+    // legend: {
+    //   enabled: true,
+    //   align: 'right',
+    //   verticalAlign: 'center',
+    //   layout: 'vertical',
+    //   x: 0,
+    //   y: 150,
+    // },
     legend: {
-      enabled: true,
-      align: 'right',
-      verticalAlign: 'center',
-      layout: 'vertical',
-      x: 0,
-      y: 150,
+      enabled: false,
     },
     plotOptions: {
       pie: {
@@ -61,13 +68,20 @@ function PieChart({ list }) {
           '#1395BA',
           '#5CA793',
         ],
+        // dataLabels: {
+        //   enabled: true,
+        //   format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+        //   style: {
+        //     textShadow: false,
+        //     color: '#212833',
+        //     textOutline: false,
+        //   },
+        // },
         dataLabels: {
           enabled: true,
-          format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-          style: {
-            textShadow: false,
-            color: '#212833',
-            textOutline: false,
+          formatter: function () {
+            this.point.percentage = this.percentage;
+            return Highcharts.numberFormat(this.percentage, 0) + '%';
           },
         },
         showInLegend: true,

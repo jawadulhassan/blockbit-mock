@@ -1,11 +1,6 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
+import React, { FC, useState } from 'react';
 import { format } from 'date-fns';
-import { useHistory } from 'react-router-dom';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import { getUserCryptoAssetsEndpoint } from 'shared/endPoints';
-import StorageConstants from 'shared/constants/StorageConstants';
 import {
   FlexRow,
   Divider,
@@ -28,62 +23,19 @@ interface IAssets {
 }
 
 const CryptoAssets: FC<{}> = () => {
-  const history = useHistory();
-  const unmounted = useRef(false);
-
-  const [assetsData, setAssetsData] = useState<IAssets>({
-    tileValue: 0,
-    tilePercentage: 0,
+  const [assetsData] = useState<IAssets>({
+    tileValue: 567901.73,
+    tilePercentage: -1.8,
     data: [],
   });
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect((): any => {
-    getUserAssets();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getUserAssets(startDate = '', endDate = ''): Promise<any> {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    apiClient(userToken)
-      .get(
-        `${getUserCryptoAssetsEndpoint}?externalUserId=${user.userId}${
-          !!startDate ? `&startDate=${startDate}` : ''
-        }${!!endDate ? `&endDate=${endDate}` : ''}`
-      )
-      .then((response): void => {
-        if (!unmounted.current) {
-          const data = response?.data?.data?.record;
-          if (data) {
-            setAssetsData(data);
-          }
-          setIsLoading(false);
-        }
-      })
-      .catch((err): void => {
-        setIsLoading(false);
-        if (!unmounted.current) {
-          if (err.response.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
+  const [isLoading] = useState(false);
 
   const dateSelectionHandler = ({ start, end }) => {
     const startDate = format(new Date(start), 'yyyy-MM-dd');
     const endDate = format(new Date(end), 'yyyy-MM-dd');
 
     if (startDate && endDate) {
-      getUserAssets(startDate, endDate);
+      console.log('startDate, endDate', startDate, endDate);
     }
   };
 

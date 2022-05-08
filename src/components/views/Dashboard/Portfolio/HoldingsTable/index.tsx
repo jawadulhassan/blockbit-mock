@@ -1,58 +1,14 @@
-import React, { useState, Fragment, FC, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, Fragment, FC } from 'react';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
+import { portfolio } from 'shared/mockData/portfolio';
 import { FlexRow, LightText, BolderText } from 'shared/commonStyles';
-import { getUserPortfolioHoldingsDetailsEndpoint } from 'shared/endPoints';
 
 import HoldingDetails from 'components/modals/HoldingDetails';
 import FullPageLoader from 'components/widgets/ContentLoaders/FullPageLoading';
 
 const HoldingListing: FC<any> = (): any => {
-  const history = useHistory();
-  const unmounted = useRef(false);
-
-  const [dataList, setDataList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect((): any => {
-    getAddedHoldingList();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getAddedHoldingList(): Promise<void> {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    apiClient(userToken)
-      .get(
-        `${getUserPortfolioHoldingsDetailsEndpoint}?externalUserId=${clientId}`
-      )
-      .then((response: any): any => {
-        if (!unmounted.current) {
-          const list = response?.data?.data?.record;
-          setDataList(list);
-          setIsLoading(false);
-        }
-      })
-      .catch((err: any): any => {
-        if (!unmounted.current) {
-          setIsLoading(false);
-          if (err?.response?.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
+  const [dataList] = useState(portfolio);
+  const [isLoading] = useState(false);
 
   if (isLoading) return <FullPageLoader />;
   return <Table holdingTableData={dataList} />;

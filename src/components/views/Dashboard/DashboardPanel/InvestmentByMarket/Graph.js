@@ -10,7 +10,7 @@ if (typeof Highcharts === 'object') {
 
 const data = {
   data: [4, 2, 3, 7, 1, 5, 3],
-  tileValue: 217093,
+  tileValue: 217093.23,
 };
 
 function PieChart() {

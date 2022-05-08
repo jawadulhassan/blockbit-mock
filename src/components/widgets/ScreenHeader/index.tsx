@@ -36,6 +36,7 @@ const ScreenHeader: FC<any> = (props: any): any => {
         <Button
           onClick={onClick}
           label={buttonLabel}
+          disabled={true}
           icon={withCaret && 'arrow.svg'}
         />
       )}
