@@ -1,6 +1,7 @@
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 
 import { FlexRow, ScreenWrapper } from 'shared/commonStyles';
+import SelectedTabContext from 'shared/contexts/selectedTabContext';
 
 import ScreenHeader from 'components/widgets/ScreenHeader';
 
@@ -10,13 +11,16 @@ import HoldingsByExchange from './HoldingsByExchange';
 import HoldingsByCurrencies from './HoldingsByCurrencies';
 
 const PortfolioView: FC<{}> = (): any => {
+  let tabContext: any = {};
+  tabContext = useContext(SelectedTabContext);
+
   return (
     <ScreenWrapper>
       <ScreenHeader
         header="Crypto Portfolio"
         buttonLabel="Start Trading"
         withCaret={true}
-        onClick={(): any => console.log('pressed!')}
+        onClick={(): any => tabContext.setSelectedTab('bot')}
       />
       <CryptoAssets />
       <FlexRow justifyContent="space-between">
