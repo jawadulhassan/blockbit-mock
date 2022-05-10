@@ -75,11 +75,11 @@ export function pairDivider(str = '') {
 export function cryptoPairDivider(str = '') {
   switch (str) {
     case 'BTCUSDT':
-      return 'btc-usdt';
+      return 'btc-usd';
     case 'ETHBTC':
       return 'eth-btc';
     case 'ETHUSDT':
-      return 'eth-usdt';
+      return 'eth-usd';
     default:
       return '';
   }

@@ -16,28 +16,33 @@ const BotDetails: FC<any> = ({
   selectedMarket,
   setSelectedStep,
 }: any): any => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [dataObj, setDataObj] = useState({
-    openOrders: [{
-      fee: 5,
-      pnl: 2.02,
-      pair: "Buy",
-      buyDate: 39000,
-      sellDate: 42000,
-      exchange: 'Binance',
-      buyPrice: 42000,
-      sellPrice: 39000,
-  }],
-    closedOrders: [{
+  console.log({ selectedMarket });
+  const [isLoading] = useState(false);
+  const [dataObj] = useState({
+    openOrders: [
+      {
         fee: 5,
         pnl: 2.02,
-        pair: "Buy",
+        pair: 'Buy',
         buyDate: 39000,
         sellDate: 42000,
         exchange: 'Binance',
         buyPrice: 42000,
         sellPrice: 39000,
-    }],
+      },
+    ],
+    closedOrders: [
+      {
+        fee: 5,
+        pnl: 2.02,
+        pair: 'Buy',
+        buyDate: 39000,
+        sellDate: 42000,
+        exchange: 'Binance',
+        buyPrice: 42000,
+        sellPrice: 39000,
+      },
+    ],
     algoTradingGridStrategy: {
       tickerPrice: 23,
       maxThreshold: 11,
@@ -46,10 +51,6 @@ const BotDetails: FC<any> = ({
       totalAllocatedAmount: 999.99,
     },
   });
-
-  console.log({dataObj})
-  console.log(setIsLoading, setDataObj);
-
 
   const {
     openOrders,

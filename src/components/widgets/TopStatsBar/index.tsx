@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import axios from 'axios';
 
 import {
   numberFormatter,
@@ -13,7 +14,7 @@ import {
   FlexColumn,
 } from 'shared/commonStyles';
 
-const BASE_URL = 'https://api.cryptonator.com/api/ticker/';
+const BASE_URL = 'http://api.cryptonator.com/api/ticker/';
 interface IMarket {
   base: string;
   price: string;
@@ -36,15 +37,18 @@ const TopStatsBar: FC<any> = ({ selectedMarket }: any): any => {
     startUpdatingData(modifiedMarket);
   }, [selectedMarket]);
 
-  const startUpdatingData = (market) => {
-    // setInterval(() => {
-    fetch(BASE_URL + market, {
+  const startUpdatingData = async (market) => {
+    console.log('Tickers: ', market);
+    // setInterval(async () => {
+    await fetch(BASE_URL + market, {
       mode: 'cors',
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log('Tickersss: ', data.ticker);
         setMarketData(data.ticker);
-      });
+      })
+      .catch((err) => console.log(err));
     // }, 4000);
   };
 
@@ -113,4 +117,5 @@ const TopStatsBar: FC<any> = ({ selectedMarket }: any): any => {
   );
 };
 
-export default React.memo(TopStatsBar);
+// export default React.memo(TopStatsBar);
+export default TopStatsBar;

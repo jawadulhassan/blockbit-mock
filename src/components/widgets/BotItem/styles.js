@@ -27,7 +27,7 @@ export const ProfitPercentage = styled.h1`
   font-weight: normal;
   font-size: 16px;
   line-height: 22px;
-  color: #00da9d;
+  color: ${({ color }) => (color ? color : '#132b66')};
   text-align: right;
 `;
 

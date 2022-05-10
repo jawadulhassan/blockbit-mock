@@ -2,9 +2,6 @@ import React, { useState, Fragment, FC } from 'react';
 import { useToasts } from 'react-toast-notifications';
 
 import { FlexRow } from 'shared/commonStyles';
-import { apiClient } from 'shared/services/api';
-import { stopBotEndpoint } from 'shared/endPoints';
-import StorageConstants from 'shared/constants/StorageConstants';
 
 import Loader from 'components/widgets/Loader';
 import DeleteBot from 'components/modals/DeleteBot';
@@ -38,7 +35,7 @@ const BotItem: FC<any> = (props: any): any => {
   } = props;
   const { addToast } = useToasts();
 
-  const [isStopping, setIsStopping] = useState(false);
+  const [isStopping] = useState(false);
   const [selectedRow, setSelectedRow] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
@@ -51,28 +48,7 @@ const BotItem: FC<any> = (props: any): any => {
 
   const handleStopBot = (event, id) => {
     event.stopPropagation();
-    setIsStopping(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const requestBody = {
-      algoTradingPlanID: id,
-      externalUserId: user.userId,
-    };
-    apiClient(userToken)
-      .post(stopBotEndpoint, requestBody)
-      .then((response: any): void => {
-        setIsStopping(false);
-        notificationHandler(
-          'Your bot has been stopped, successfully.',
-          'success'
-        );
-      })
-      .catch((err: any): void => {
-        const errorMessage = err.response.data.message;
-        setIsStopping(false);
-        notificationHandler(errorMessage, 'error');
-      });
+    notificationHandler('Your bot has been stopped, successfully.', 'success');
   };
 
   const toggleDeleteModal = (): void => setOpenDeleteModal(!openDeleteModal);
@@ -103,7 +79,11 @@ const BotItem: FC<any> = (props: any): any => {
                   <BolderText>{botName}</BolderText>
                 </div>
                 <div>
-                  <img src="/static/svgs/green-pulse.svg" alt="pulse" />
+                  {trade > 0 ? (
+                    <img src="/static/svgs/up-swiggly.svg" alt="icon-small" />
+                  ) : (
+                    <img src="/static/svgs/down-swiggly.svg" alt="icon-small" />
+                  )}
                   <FlexRow>
                     <ProfitPercentage color={trade > 0 ? '#00DA9D' : '#F33501'}>
                       {`${trade}%`}

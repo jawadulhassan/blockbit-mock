@@ -1,10 +1,6 @@
-import React, { useState, FC, useRef, useEffect, Fragment } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, FC, Fragment } from 'react';
 
-import { apiClient } from 'shared/services/api';
-import { getUserBotsEndpoint } from 'shared/endPoints';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
+import { botData } from 'shared/mockData/bot';
 import {
   Divider,
   FlexRow,
@@ -32,51 +28,10 @@ const BotView: FC<any> = ({
   setSelectedStep,
   setIsWelcomeOpen,
 }): any => {
-  const history = useHistory();
-  const unmounted = useRef(false);
-
-  const [dataList, setDataList] = useState([]);
+  const [dataList] = useState(botData);
+  const [isLoading] = useState(false);
   const [layout, setLayout] = useState('list');
-  const [isLoading, setIsLoading] = useState(false);
   const [allRowsSelected, setAllRowsSelected] = useState(false);
-
-  useEffect((): any => {
-    getAddedBotList();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStep]);
-
-  async function getAddedBotList(): Promise<void> {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    apiClient(userToken)
-      .get(`${getUserBotsEndpoint}?externalUserId=${clientId}`)
-      .then((response: any): any => {
-        if (!unmounted.current) {
-          const list = response?.data?.data?.records;
-          if (list?.length === 0) {
-            setIsWelcomeOpen(true);
-          }
-          setDataList(list);
-          setIsLoading(false);
-        }
-      })
-      .catch((err: any): any => {
-        if (!unmounted.current) {
-          setIsLoading(false);
-          if (err?.response?.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
 
   return (
     <Fragment>
@@ -131,7 +86,7 @@ const BotView: FC<any> = ({
         <Table
           botTableData={dataList}
           setSelectedBot={setSelectedBot}
-          getAddedBotList={getAddedBotList}
+          getAddedBotList={() => console.log('getAddedBotList')}
           allRowsSelected={allRowsSelected}
           setSelectedStep={setSelectedStep}
         />
@@ -140,7 +95,7 @@ const BotView: FC<any> = ({
         <Grid
           botTableData={dataList}
           setSelectedBot={setSelectedBot}
-          getAddedBotList={getAddedBotList}
+          getAddedBotList={() => console.log('getAddedBotList')}
           setSelectedStep={setSelectedStep}
         />
       )}
