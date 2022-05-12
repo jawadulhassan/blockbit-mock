@@ -8,10 +8,10 @@ import ErrorBoundary from 'components/widgets/ErrorBoundary';
 const DashboardHandler: FC<any> = (): any => {
   const [selectedTab, setSelectedTab] = useState('bot');
   return (
-    <ErrorBoundary>
+    <>
       <AuthHeader selectedTab={selectedTab} />
       <Dashboard selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-    </ErrorBoundary>
+    </>
   );
 };
 
