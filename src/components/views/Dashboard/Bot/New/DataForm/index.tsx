@@ -1,19 +1,8 @@
-import React, {
-  FC,
-  useRef,
-  useState,
-  Fragment,
-  useEffect,
-  useContext,
-} from 'react';
+import React, { FC, useState, Fragment, useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 import { Label, CustomInput } from 'reactstrap';
 import { useToasts } from 'react-toast-notifications';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import StorageConstants from 'shared/constants/StorageConstants';
 import SelectedTabContext from 'shared/contexts/selectedTabContext';
 import {
   FlexRow,
@@ -24,20 +13,8 @@ import {
 import {
   pairDivider,
   pairValuesGetter,
-  getNamesFromList,
-  cryptoPairDivider,
-  balanceCalculator,
   getSelectedItemIdFromList,
-  tradeOrdersGeneratorTable,
 } from 'shared/helpers';
-import {
-  createBotEndpoint,
-  addExchangeEndpoint,
-  validateKeysEndpoint,
-  getAvailableMarketsEndpoint,
-  getAvailableStrategiesEndpoint,
-  getAvailableExchangesWithStatusEndpoint,
-} from 'shared/endPoints';
 
 import BotPermissionModal from 'components/modals/BotPermission';
 
@@ -55,8 +32,6 @@ import {
   StepWrapper,
   DashedBorder,
 } from './styles';
-
-const BASE_URL = 'https://api.cryptonator.com/api/ticker/';
 
 const experienceFormatter = (stage: any): any => {
   switch (stage) {
@@ -181,15 +156,18 @@ const FirstStep: FC<any> = ({
   setBotFormData,
   setSelectedStep,
 }: any): any => {
-  const history = useHistory();
-  const unmounted = useRef(false);
   const { addToast } = useToasts();
   const { handleSubmit, register, errors } = useForm();
 
   const [apiKey, setApiKey] = useState('');
   const [secretKey, setSecretKey] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [exchangeList, setExchangeList] = useState([]);
+  const [isLoading] = useState(false);
+  const [exchangeList] = useState([
+    'Binance',
+    'Bitfinix',
+    'Houbai',
+    'Ethereum',
+  ]);
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [displayKeyFields, setDisplayKeyFields] = useState(false);
 
@@ -205,20 +183,12 @@ const FirstStep: FC<any> = ({
     });
   }
 
-  useEffect((): any => {
-    getAvailableExchangeList();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const onSubmit = (values: any): void => {
-    const foundExchange = getSelectedItemIdFromList(
-      exchangeList,
-      values.exchange,
-      'description'
-    );
+    const { exchange: selectedExchange } = values;
+    const foundExchange = {
+      exchangeID: 4,
+      selectedExchange,
+    };
     setBotFormData({
       ...botFormData,
       apiKey,
@@ -231,99 +201,27 @@ const FirstStep: FC<any> = ({
 
   const onExchangeAddition = (values: any): void => {
     const { exchange, apiSecret, apiKey, name } = values;
-    setIsLoading(true);
-    const foundExchange = getSelectedItemIdFromList(
+    const foundExchange = {
       exchangeList,
       exchange,
-      'description'
-    );
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientID = user.userId;
+    };
+
+    const clientID = 1;
     const requestBody = {
       apiKey,
       clientID,
       apiSecret,
-      exchangeID: foundExchange.exchangeID,
+      exchangeID: foundExchange.exchange,
     };
-    apiClient(userToken)
-      .post(addExchangeEndpoint, requestBody)
-      .then((): void => {
-        setIsLoading(false);
-        setBotFormData({
-          ...botFormData,
-          apiKey,
-          name: name,
-          apiSecret: secretKey,
-          exchangeID: foundExchange.exchangeID,
-        });
-        setSelectedStep(2);
-        notificationHandler(
-          'Your exchange has been added, successfully.',
-          'success'
-        );
-      })
-      .catch((err: any): void => {
-        const errorMessage = err.response.data.message;
-        setIsLoading(false);
-        notificationHandler(errorMessage, 'error');
-      });
-  };
 
-  async function getAvailableExchangeList(): Promise<any> {
-    setIsLoading(true);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const user = !!userData && JSON.parse(userData);
-    const clientID = user.userId;
-    apiClient(userToken)
-      .get(`${getAvailableExchangesWithStatusEndpoint}?id=${clientID}`)
-      .then((response: any): any => {
-        const list = response?.data?.data?.records;
-        if (list) {
-          setExchangeList(list);
-          if (!list[0].status) {
-            setDisplayKeyFields(true);
-          }
-          if (list[0].status) {
-            setDisplayKeyFields(false);
-            setApiKey(list[0].apiKey);
-            setSecretKey(list[0].apiSecret);
-          }
-        }
-        setIsLoading(false);
-      })
-      .catch((err: any): any => {
-        setIsLoading(false);
-        if (err.response.status === 401) {
-          localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-          localStorage.setItem(StorageConstants.USER_DATA, '');
-          history.push(ROUTE_CONSTANTS.LOGIN);
-        }
-      });
-  }
+    console.log('onExchangeAddition: ', name, requestBody);
 
-  const handleExchangeSelection = (event) => {
-    const { value } = event.target;
-    const foundExchange = getSelectedItemIdFromList(
-      exchangeList,
-      value,
-      'description'
+    notificationHandler(
+      'Your exchange has been added, successfully.',
+      'success'
     );
-    if (!foundExchange?.status) {
-      setApiKey('');
-      setSecretKey('');
-      setDisplayKeyFields(true);
-    }
-    if (foundExchange?.status) {
-      setDisplayKeyFields(false);
-      setApiKey(foundExchange.apiKey);
-      setSecretKey(foundExchange.apiSecret);
-    }
   };
 
-  const EXCHANGE_LIST = getNamesFromList(exchangeList, 'description');
   return (
     <FlexColumn width="100%" alignItems="center" marginTop="60px">
       {!!isLoading && <Loader />}
@@ -340,9 +238,9 @@ const FirstStep: FC<any> = ({
         width="65%"
         name="exchange"
         label="Exchange"
-        options={EXCHANGE_LIST}
         register={register}
-        onChange={(event) => handleExchangeSelection(event)}
+        options={exchangeList}
+        value={exchangeList[0]}
       />
       {!!displayKeyFields && (
         <Fragment>
@@ -409,19 +307,12 @@ const SecondStep: FC<any> = ({
   const { addToast } = useToasts();
   const { handleSubmit, register } = useForm();
 
-  const [marketList, setMarketList] = useState([]);
-  const [strategyList, setStrategyList] = useState([]);
-  const [marketWallets, setMarketWallets] = useState([]);
+  const [marketList] = useState(['BTC', 'USDT', 'ETH', 'POL']);
+  const [strategyList] = useState(['Grid']);
+  const [marketWallets] = useState([]);
   const [experienceValue, setExperienceValue] = useState(100);
 
   const handleExperience = (value: any): void => setExperienceValue(value);
-
-  useEffect((): void => {
-    validatingKeysFunc();
-    getAvailableMarketList(botFormData?.exchangeID);
-    getAvailableStrategyList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   function notificationHandler(content: any, type: any = 'info'): any {
     addToast(content, {
@@ -430,51 +321,21 @@ const SecondStep: FC<any> = ({
     });
   }
 
-  const validatingKeysFunc = (): void => {
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientID = user.userId;
-    const requestBody = {
-      clientID,
-      apiKey: botFormData?.apiKey,
-      apiSecret: botFormData?.apiSecret,
-      exchangeID: botFormData.exchangeID,
-    };
-    apiClient(userToken)
-      .post(validateKeysEndpoint, requestBody)
-      .then((response: any): void => {
-        const wallets = response?.data?.data?.wallets;
-        setMarketWallets(wallets);
-        notificationHandler(
-          'Your exchange has been validated, successfully.',
-          'success'
-        );
-        setDisplaySuccess(true);
-      })
-      .catch((err: any): void => {
-        const errorMessage = err.response.data.message;
-        notificationHandler(errorMessage, 'error');
-      });
-  };
-
   const onSubmit = (values: any): void => {
-    const foundMarket = getSelectedItemIdFromList(
-      marketList,
-      values.marketID,
-      'instrumentsymbolcode'
-    );
-    let { first, second } = pairDivider(foundMarket.instrumentsymbolcode);
-    let {
-      firstMarketTotalBalance,
-      secondMarketTotalBalance,
-    } = pairValuesGetter(first, second, marketWallets);
+    const foundMarket = {
+      marketID: 4,
+      marketType: 'Binance',
+      instrumentsymbolcode: 'BTC',
+    };
 
-    const foundStrategy = getSelectedItemIdFromList(
-      strategyList,
-      values.strategyID,
-      'name'
-    );
+    let { first, second } = pairDivider(foundMarket.instrumentsymbolcode);
+    let { firstMarketTotalBalance, secondMarketTotalBalance } =
+      pairValuesGetter(first, second, marketWallets);
+
+    const foundStrategy = {
+      tradingStrategyID: 'Grid',
+    };
+    getSelectedItemIdFromList(strategyList, values.strategyID, 'name');
     const tradingExperience = experienceFormatter(experienceValue);
     setBotFormData({
       ...botFormData,
@@ -488,43 +349,21 @@ const SecondStep: FC<any> = ({
     });
     setSelectedStep(3);
     setDisplaySuccess(false);
+    notificationHandler(
+      'Your exchange has been validated, successfully.',
+      'success'
+    );
   };
 
-  async function getAvailableMarketList(exchangeId: any): Promise<any> {
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const response = await apiClient(userToken).get(
-      `${getAvailableMarketsEndpoint}?id=${exchangeId}`
-    );
-    const list = !!response && response?.data?.data?.records;
-    if (list) {
-      setMarketList(list);
-    }
-  }
-
-  async function getAvailableStrategyList(): Promise<any> {
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const response = await apiClient(userToken).get(
-      getAvailableStrategiesEndpoint
-    );
-    const list = !!response && response?.data?.data?.records;
-    if (list) {
-      setStrategyList(list);
-    }
-  }
-
-  const MARKET_LIST = getNamesFromList(marketList, 'instrumentsymbolcode');
-  const STRATEGY_LIST = getNamesFromList(strategyList, 'name');
   return (
     <FlexColumn width="100%" alignItems="center" marginTop="60px">
       <Dropdown
         width="65%"
         label="Market"
         name="marketID"
-        options={MARKET_LIST}
         register={register}
-        onChange={(event) => {
-          setSelectedMarket(event.target.value);
-        }}
+        options={marketList}
+        value={marketList[0]}
       />
       <Slider
         width="65%"
@@ -539,8 +378,9 @@ const SecondStep: FC<any> = ({
         width="65%"
         label="Strategy"
         name="strategyID"
-        options={STRATEGY_LIST}
         register={register}
+        options={strategyList}
+        value={strategyList[0]}
       />
       <Button
         label="Next"
@@ -558,17 +398,12 @@ const ThirdStep: FC<any> = ({ botFormData, setParentStep }: any): any => {
   tabContext = useContext(SelectedTabContext);
   const { handleSubmit, register, errors } = useForm();
 
-  const [isError, setIsError] = useState(false);
+  const [isError] = useState(false);
   const [riskValue, setRiskValue] = useState(100);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting] = useState(false);
   const [investmentValue, setInvestmentValue] = useState(60);
   const [isAskingPermission, setIsAskingPermission] = useState(false);
   const [openPermissionModal, setOpenPermissionModal] = useState(false);
-  const [recurringValues, setRecurringValues] = useState({
-    numberOfGrids: 0,
-    gridRiskProfileBoundLow: 0,
-    gridRiskProfileBoundHigh: 0,
-  });
 
   const handleRisk = (value: any): void => setRiskValue(value);
   const handleInvestment = (value: any): void => setInvestmentValue(value);
@@ -583,174 +418,22 @@ const ThirdStep: FC<any> = ({ botFormData, setParentStep }: any): any => {
   }
 
   async function handlePostOrder(values: any): Promise<any> {
-    const {
-      numberOfGrids,
-      gridRiskProfileBoundLow,
-      gridRiskProfileBoundHigh,
-    } = values;
-    const {
-      name,
-      marketID,
-      exchangeID,
-      marketSymbol,
-      firstMarketTotalBalance,
-      secondMarketTotalBalance,
-    } = botFormData;
-    const modifiedMarket = cryptoPairDivider(botFormData.marketSymbol);
-    const tickerPrice = await startUpdatingData(modifiedMarket);
-    let totalInvestmentBalance = await balanceCalculator(
-      firstMarketTotalBalance,
-      secondMarketTotalBalance,
-      tickerPrice.ticker.price,
-      investmentValue
+    console.log('handlePostOrder: ', values);
+    notificationHandler(
+      'Your bot has been validated, successfully.',
+      'success'
     );
-    let { calculatedGridValue } = tradeOrdersGeneratorTable({
-      totalInvestmentBalance,
-      numberOfGrids: Number(numberOfGrids),
-      tickerPrice: Number(tickerPrice.ticker.price),
-      lowerThreshold: Number(gridRiskProfileBoundLow),
-      higherThreshold: Number(gridRiskProfileBoundHigh),
-    });
-
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    const botObj = {
-      clientId,
-      Name: name,
-      accountId: null,
-      marketId: marketID,
-      market: marketSymbol,
-      riskProfile: riskValue,
-      exchangeId: exchangeID,
-      algoTradingPlanId: null,
-      externalUserId: clientId,
-      grid: calculatedGridValue,
-      userPermissionGranted: false,
-      investment: totalInvestmentBalance,
-      numberOfGrids: Number(numberOfGrids),
-      tradeWallet: firstMarketTotalBalance,
-      currencyWallet: secondMarketTotalBalance,
-      ticker: Number(tickerPrice.ticker.price),
-      investmentPercentage: Number(investmentValue),
-      gridRiskProfileBoundLow: Number(gridRiskProfileBoundLow),
-      gridRiskProfileBoundHigh: Number(gridRiskProfileBoundHigh),
-    };
-
-    setIsSubmitting(true);
-    apiClient(userToken)
-      .post(createBotEndpoint, botObj)
-      .then((): void => {
-        notificationHandler('Bot has been created, successfully', 'success');
-        setParentStep(1);
-        setIsSubmitting(false);
-      })
-      .catch((err: any): void => {
-        setIsSubmitting(false);
-        if (err.response.status === 412) {
-          setRecurringValues({
-            numberOfGrids,
-            gridRiskProfileBoundLow,
-            gridRiskProfileBoundHigh,
-          });
-          togglePermissionModal();
-          return;
-        }
-        const errorMessage = err.response.data.message;
-        notificationHandler(errorMessage, 'error');
-        setIsError(errorMessage);
-      });
+    setParentStep(1);
   }
 
   async function handlePostPermissionedOrder() {
     setIsAskingPermission(true);
-    const {
-      numberOfGrids,
-      gridRiskProfileBoundLow,
-      gridRiskProfileBoundHigh,
-    } = recurringValues;
-    const {
-      name,
-      marketID,
-      exchangeID,
-      marketSymbol,
-      firstMarketTotalBalance,
-      secondMarketTotalBalance,
-    } = botFormData;
-    const modifiedMarket = cryptoPairDivider(botFormData.marketSymbol);
-    const tickerPrice = await startUpdatingData(modifiedMarket);
-    let totalInvestmentBalance = await balanceCalculator(
-      firstMarketTotalBalance,
-      secondMarketTotalBalance,
-      tickerPrice.ticker.price,
-      investmentValue
+
+    notificationHandler(
+      'Your bot has been validated, successfully.',
+      'success'
     );
-    let { calculatedGridValue } = tradeOrdersGeneratorTable({
-      totalInvestmentBalance,
-      numberOfGrids: Number(numberOfGrids),
-      tickerPrice: Number(tickerPrice.ticker.price),
-      lowerThreshold: Number(gridRiskProfileBoundLow),
-      higherThreshold: Number(gridRiskProfileBoundHigh),
-    });
-
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    const botObj = {
-      clientId,
-      Name: name,
-      accountId: null,
-      marketId: marketID,
-      market: marketSymbol,
-      riskProfile: riskValue,
-      exchangeId: exchangeID,
-      algoTradingPlanId: null,
-      externalUserId: clientId,
-      grid: calculatedGridValue,
-      userPermissionGranted: true,
-      investment: totalInvestmentBalance,
-      numberOfGrids: Number(numberOfGrids),
-      tradeWallet: firstMarketTotalBalance,
-      currencyWallet: secondMarketTotalBalance,
-      ticker: Number(tickerPrice.ticker.price),
-      investmentPercentage: Number(investmentValue),
-      gridRiskProfileBoundLow: Number(gridRiskProfileBoundLow),
-      gridRiskProfileBoundHigh: Number(gridRiskProfileBoundHigh),
-    };
-
-    apiClient(userToken)
-      .post(createBotEndpoint, botObj)
-      .then((): void => {
-        notificationHandler('Bot has been created, successfully', 'success');
-        setParentStep(1);
-        setIsAskingPermission(false);
-        togglePermissionModal();
-      })
-      .catch((err: any): void => {
-        setIsAskingPermission(false);
-        if (err.response.status === 406) {
-          notificationHandler(
-            'You do not have enough balance to create bot.',
-            'error'
-          );
-          togglePermissionModal();
-          return;
-        }
-        const errorMessage = err.response.data.message;
-        notificationHandler(errorMessage, 'error');
-        setIsError(errorMessage);
-      });
-  }
-
-  async function startUpdatingData(market: any): Promise<any> {
-    const response = await fetch(BASE_URL + market, {
-      mode: 'cors',
-    });
-
-    const parsedResponse = response.json();
-    return parsedResponse;
+    setParentStep(1);
   }
 
   return (
