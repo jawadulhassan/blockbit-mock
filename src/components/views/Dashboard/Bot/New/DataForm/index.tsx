@@ -169,7 +169,7 @@ const FirstStep: FC<any> = ({
     'Ethereum',
   ]);
   const [termsAgreed, setTermsAgreed] = useState(false);
-  const [displayKeyFields, setDisplayKeyFields] = useState(false);
+  const [displayKeyFields] = useState(false);
 
   const onTermsToggle = (event) => {
     const { checked } = event.target;

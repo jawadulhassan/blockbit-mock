@@ -1,10 +1,6 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { FC, useState } from 'react';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import { getUserExchangesListEndpoint } from 'shared/endPoints';
-import StorageConstants from 'shared/constants/StorageConstants';
+import { exchangeData } from 'shared/mockData/exchange';
 import {
   AlignedEnd,
   AlignedCenter,
@@ -24,65 +20,23 @@ import Grid from './Grid';
 import Table from './Table';
 
 const Exchanges: FC<{}> = () => {
-  const history = useHistory();
-  const unmounted = useRef(false);
   const [open, setOpen] = useState(false);
   const [layout, setLayout] = useState('list');
-  const [isLoading, setIsLoading] = useState(false);
-  const [exchangeList, setExchangeList] = useState([]);
+  const [isLoading] = useState(false);
+  const [exchangeList] = useState(exchangeData);
   const [selectedFilter, setSelectedFilter] = useState({
     filter: '',
     value: '',
   });
 
-  useEffect((): any => {
-    getAddedExchangeList();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const toggle = (): void => setOpen(!open);
-
-  async function getAddedExchangeList(params: any = null): Promise<any> {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    apiClient(userToken)
-      .get(
-        `${getUserExchangesListEndpoint}?externalUserId=${user.userId}&${params}`
-      )
-      .then((response): void => {
-        if (!unmounted.current) {
-          const list = response?.data?.data?.records;
-          if (list) {
-            setExchangeList(list);
-            setIsLoading(false);
-          }
-        }
-      })
-      .catch((err): void => {
-        if (!unmounted.current) {
-          setIsLoading(false);
-          if (err.response.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
 
   const handleSearch = () => {
     if (selectedFilter.value === '') {
-      getAddedExchangeList();
       return;
     }
     const queryParam = `${selectedFilter.filter}=${selectedFilter.value}`;
-    setIsLoading(true);
-    getAddedExchangeList(queryParam);
+    console.log('handleSearch: ', queryParam);
   };
 
   return (
@@ -97,7 +51,7 @@ const Exchanges: FC<{}> = () => {
       <AddExchange
         open={open}
         toggle={toggle}
-        getAddedExchangeList={getAddedExchangeList}
+        getAddedExchangeList={() => console.log('getAddedExchangeList')}
       />
       <FlexedReverse>
         <FlexedBetweenSeventy>
@@ -116,13 +70,13 @@ const Exchanges: FC<{}> = () => {
       {layout === 'list' && (
         <Table
           tableData={exchangeList}
-          getAddedExchangeList={getAddedExchangeList}
+          getAddedExchangeList={() => console.log('getAddedExchangeList')}
         />
       )}
       {layout === 'grid' && (
         <Grid
           tableData={exchangeList}
-          getAddedExchangeList={getAddedExchangeList}
+          getAddedExchangeList={() => console.log('getAddedExchangeList')}
         />
       )}
     </ScreenWrapper>

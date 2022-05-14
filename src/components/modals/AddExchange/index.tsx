@@ -1,20 +1,11 @@
-import React, { useState, FC, useEffect, Fragment } from 'react';
+import React, { useState, FC, Fragment } from 'react';
 import Zoom from 'react-reveal/Zoom';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 import { Label, CustomInput } from 'reactstrap';
 import { useToasts } from 'react-toast-notifications';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
 import { MainHeader, ErrorMessage } from 'shared/commonStyles';
-import StorageConstants from 'shared/constants/StorageConstants';
-import { getNamesFromList, getSelectedItemIdFromList } from 'shared/helpers';
-import {
-  addExchangeEndpoint,
-  getAvailableExchangesEndpoint,
-} from 'shared/endPoints';
 
 import Button from 'components/widgets/Button';
 import Dropdown from 'components/widgets/Dropdown';
@@ -82,24 +73,23 @@ const Thanking: FC<any> = ({
 };
 
 const EnterCredentials: FC<any> = ({ setIsSuccess }: any): any => {
-  const history = useHistory();
   const { addToast } = useToasts();
   const { handleSubmit, register, errors } = useForm();
 
-  const [isError, setIsError] = useState(false);
-  const [exchangeList, setExchangeList] = useState([]);
+  const [isError] = useState(false);
+  const [exchangeList] = useState([
+    'Binance',
+    'Bitfinix',
+    'Houbai',
+    'Ethereum',
+  ]);
   const [termsAgreed, setTermsAgreed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting] = useState(false);
 
   const onTermsToggle = (event) => {
     const { checked } = event.target;
     setTermsAgreed(checked);
   };
-
-  useEffect((): void => {
-    getAvailableExchangeList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   function notificationHandler(content: any, type: any = 'info'): any {
     addToast(content, {
@@ -110,60 +100,21 @@ const EnterCredentials: FC<any> = ({ setIsSuccess }: any): any => {
 
   const onSubmit = (values: any): void => {
     const { exchange, apiSecret, apiKey } = values;
-    setIsSubmitting(true);
-    const foundExchange = getSelectedItemIdFromList(
-      exchangeList,
-      exchange,
-      'description'
-    );
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientID = user.userId;
+
     const requestBody = {
       apiKey,
-      clientID,
       apiSecret,
-      exchangeID: foundExchange.exchangeID,
+      exchangeID: exchange,
     };
-    apiClient(userToken)
-      .post(addExchangeEndpoint, requestBody)
-      .then((): void => {
-        setIsSubmitting(false);
-        notificationHandler(
-          'Your exchange has been added, successfully.',
-          'success'
-        );
-        setIsSuccess(true);
-      })
-      .catch((err: any): void => {
-        const errorMessage = err.response.data.message;
-        setIsError(errorMessage);
-        setIsSubmitting(false);
-        notificationHandler(errorMessage, 'error');
-      });
+
+    console.log('onSubmit: ', requestBody);
+    notificationHandler(
+      'Your exchange has been added, successfully.',
+      'success'
+    );
+    setIsSuccess(true);
   };
 
-  async function getAvailableExchangeList(): Promise<any> {
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    apiClient(userToken)
-      .get(getAvailableExchangesEndpoint)
-      .then((response: any): any => {
-        const list = response?.data?.data?.records;
-        if (list) {
-          setExchangeList(list);
-        }
-      })
-      .catch((err: any): any => {
-        if (err.response.status === 401) {
-          localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-          localStorage.setItem(StorageConstants.USER_DATA, '');
-          history.push(ROUTE_CONSTANTS.LOGIN);
-        }
-      });
-  }
-
-  const EXCHANGE_LIST = getNamesFromList(exchangeList, 'description');
   return (
     <Fragment>
       <MainHeader>Add Exchange</MainHeader>
@@ -172,8 +123,9 @@ const EnterCredentials: FC<any> = ({ setIsSuccess }: any): any => {
         <Dropdown
           name="exchange"
           label="Exchange"
-          options={EXCHANGE_LIST}
           register={register}
+          options={exchangeList}
+          value={exchangeList[0]}
         />
         <TextInput
           name="apiSecret"
