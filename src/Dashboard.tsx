@@ -6,7 +6,7 @@ import { AuthHeader } from 'components/views/Header';
 // import ErrorBoundary from 'components/widgets/ErrorBoundary';
 
 const DashboardHandler: FC<any> = (): any => {
-  const [selectedTab, setSelectedTab] = useState('exchanges');
+  const [selectedTab, setSelectedTab] = useState('history');
   return (
     <>
       <AuthHeader selectedTab={selectedTab} />

@@ -7,8 +7,8 @@ import './tab-styles.css';
 
 const Settings: FC<any> = (props: any): any => {
   const [selectedTab, setSelectedTab] = useState(1);
-
   const toggle = (event: any): any => setSelectedTab(event);
+
   return (
     <React.Fragment>
       <FlexContainerTwentyFivePad center={props.center}>

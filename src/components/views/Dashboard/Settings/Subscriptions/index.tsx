@@ -47,8 +47,8 @@ const SubscriptionComponent: FC<any> = ({ toggleScreen }: any): any => {
   }, [openInvoice]);
 
   const photoSrc = localStorage.getItem(StorageConstants.USER_PHOTO);
-  const user_data: any = localStorage.getItem(StorageConstants.USER_DATA);
-  const fname: any = JSON.parse(user_data).name;
+  const user_data: any = 'James Any';
+  const fname: any = 'James';
 
   return (
     <React.Fragment>

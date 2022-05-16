@@ -12,6 +12,7 @@ const settings = {
 
 const RangeSlider = ({ value, min, max, step }) => {
   const [percent, setPercent] = useState(0);
+
   useEffect(() => {
     const slider = document.querySelector('.slider');
     applyFill(slider);

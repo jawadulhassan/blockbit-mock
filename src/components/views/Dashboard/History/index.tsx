@@ -1,10 +1,6 @@
-import React, { useState, useRef, FC, useEffect, Fragment } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, FC, Fragment } from 'react';
 
-import { apiClient } from 'shared/services/api';
-import { ROUTE_CONSTANTS } from 'shared/constants/Routes';
-import { getUserBotsHistoryEndpoint } from 'shared/endPoints';
-import StorageConstants from 'shared/constants/StorageConstants';
+import { historyData } from 'shared/mockData/history';
 import {
   Divider,
   FlexRow,
@@ -25,48 +21,10 @@ import Grid from './Grid';
 import Table from './Table';
 
 const History: FC<{}> = (): any => {
-  const history = useHistory();
-  const unmounted = useRef(false);
-
-  const [dataList, setDataList] = useState([]);
+  const [dataList] = useState(historyData);
   const [layout, setLayout] = useState('list');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [allRowsSelected, setAllRowsSelected] = useState(false);
-
-  useEffect((): any => {
-    getBotHistoryList();
-    return (): void => {
-      unmounted.current = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getBotHistoryList(): Promise<void> {
-    setIsLoading(true);
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientId = user.userId;
-    apiClient(userToken)
-      .get(`${getUserBotsHistoryEndpoint}?id=${clientId}`)
-      .then((response: any): any => {
-        if (!unmounted.current) {
-          const list = response?.data?.data?.records;
-          setDataList(list);
-          setIsLoading(false);
-        }
-      })
-      .catch((err: any): any => {
-        if (!unmounted.current) {
-          setIsLoading(false);
-          if (err?.response?.status === 401) {
-            localStorage.setItem(StorageConstants.AUTH_TOKEN, '');
-            localStorage.setItem(StorageConstants.USER_DATA, '');
-            history.push(ROUTE_CONSTANTS.LOGIN);
-          }
-        }
-      });
-  }
 
   return (
     <ScreenWrapper>
@@ -103,13 +61,13 @@ const History: FC<{}> = (): any => {
         <Table
           historyTableData={dataList}
           allRowsSelected={allRowsSelected}
-          getBotHistoryList={getBotHistoryList}
+          getBotHistoryList={() => console.log('getBotHistoryList')}
         />
       )}
       {layout === 'grid' && (
         <Grid
           historyTableData={dataList}
-          getBotHistoryList={getBotHistoryList}
+          getBotHistoryList={() => console.log('getBotHistoryList')}
         />
       )}
     </ScreenWrapper>
