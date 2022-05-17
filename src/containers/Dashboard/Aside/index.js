@@ -14,10 +14,6 @@ function Aside(props) {
     setSelectedTab(route);
   }
 
-  function handleLogout() {
-    console.log('Logout');
-  }
-
   return (
     <AsideWrapper>
       <SideBarNav>
@@ -32,9 +28,6 @@ function Aside(props) {
             <NavOptions icon={icon} label={label} />
           </ListItems>
         ))}
-        <ListItems onClick={handleLogout}>
-          <NavOptions icon="static/svgs/lock.svg" label="Log out" />
-        </ListItems>
       </SideBarNav>
     </AsideWrapper>
   );

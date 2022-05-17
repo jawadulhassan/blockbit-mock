@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import capitalize from 'lodash/capitalize';
 import { Link } from 'react-router-dom';
 
+import { notificationsData } from 'shared/mockData/notifications';
 import {
   FlexRow,
   FreeIcon,
@@ -19,7 +20,7 @@ import Button from 'components/widgets/Button';
 import Notifications from '../Notifications';
 
 function AuthHeader({ selectedTab }) {
-  const [notificationList, setNotificationList] = useState([]);
+  const [notificationList, setNotificationList] = useState(notificationsData);
   const [displayNotifications, setDisplayNotifications] = useState(false);
   const [hasUnReadNotifications, setHasUnReadNotifications] = useState(false);
 
@@ -73,7 +74,12 @@ function AuthHeader({ selectedTab }) {
         />
         <ListOfUsers>Jones</ListOfUsers>
         <FreeIcon src="static/svgs/free.svg" alt="icon-free" />
-        <Button label="Log out" marginLeft="15px" onClick={handleLogout} />
+        <Button
+          label="Log out"
+          marginLeft="15px"
+          onClick={handleLogout}
+          disabled={true}
+        />
       </AuthFlexContainer>
       {displayNotifications && (
         <Notifications

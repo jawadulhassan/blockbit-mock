@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { PDFViewer } from '@react-pdf/renderer';
 
-import StorageConstants from 'shared/constants/StorageConstants';
 import {
   Heading,
   LightText,
@@ -21,7 +21,6 @@ import RangeSlider from 'components/widgets/RangeSlider';
 
 import InvoiceComp from './InvoiceTemplate';
 import PaymentPlansComp from './PaymentPlans';
-import { PDFViewer } from '@react-pdf/renderer';
 
 const SubscriptionComponent: FC<any> = ({ toggleScreen }: any): any => {
   const [ready, setReady] = useState(false);
@@ -46,8 +45,6 @@ const SubscriptionComponent: FC<any> = ({ toggleScreen }: any): any => {
     }
   }, [openInvoice]);
 
-  const photoSrc = localStorage.getItem(StorageConstants.USER_PHOTO);
-  const user_data: any = 'James Any';
   const fname: any = 'James';
 
   return (
@@ -129,7 +126,7 @@ const SubscriptionComponent: FC<any> = ({ toggleScreen }: any): any => {
                 e.target.onerror = null;
                 e.target.src = 'static/svgs/avataaars.svg';
               }}
-              src={photoSrc || 'static/svgs/avataaars.svg'}
+              src="static/svgs/avataaars.svg"
             />
             <LightText lineHeight="45px">{fname}</LightText>
           </LeftNinetyPaddedWrapper>

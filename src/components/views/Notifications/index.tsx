@@ -13,9 +13,6 @@ import {
   NotificationDate,
   IndividualNotification,
 } from './notificationsStyles';
-import StorageConstants from 'shared/constants/StorageConstants';
-import { apiClient } from 'shared/services/api';
-import { readUserNotificationsEndpoint } from 'shared/endPoints';
 
 interface INotification {
   id: number;
@@ -54,27 +51,19 @@ const Notifications: React.FC<IProps> = ({
   });
 
   const timeDistance = (time) => {
-    return formatDistanceToNow(new Date(time * 1000), {
+    // return formatDistanceToNow(new Date(time * 1000), {
+    return formatDistanceToNow(new Date(time), {
       addSuffix: true,
     });
   };
 
   const readAllNotifications = (): void => {
-    const userData = localStorage.getItem(StorageConstants.USER_DATA);
-    const userToken = localStorage.getItem(StorageConstants.AUTH_TOKEN);
-    const user = !!userData && JSON.parse(userData);
-    const clientID = user.userId;
+    const clientID = 7;
     const requestBody = {
       externalUserId: clientID,
     };
-    apiClient(userToken)
-      .post(readUserNotificationsEndpoint, requestBody)
-      .then((): void => {
-        if (!unmounted.current) {
-          getUserNotifications();
-        }
-      })
-      .catch((): void => {});
+
+    console.log({ requestBody });
   };
 
   return (

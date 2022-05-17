@@ -17,7 +17,7 @@ const Update: FC<any> = ({ open, toggle }: any): any => {
       <ModalBody className="pt-0">
         <div className="modal-body-wrapper">
           <img
-            src={`/static/svgs/update.svg`}
+            src="/static/svgs/update.svg"
             alt="icon-status"
             className="p-2"
             width="60px"
