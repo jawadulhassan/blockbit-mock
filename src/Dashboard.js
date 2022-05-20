@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
 import Dashboard from 'containers/Dashboard';
@@ -16,7 +16,7 @@ const Default = ({ children }) => {
   return isNotMobile ? children : null;
 };
 
-const DashboardHandler: FC<any> = (): any => {
+const DashboardHandler = () => {
   const [selectedTab, setSelectedTab] = useState('dashboard');
 
   return (
