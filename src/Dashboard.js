@@ -19,7 +19,7 @@ const DashboardHandler = () => {
     const width = window.innerWidth;
     setWindowWidth(width);
   };
-  console.log({ width });
+  // console.log({ width });
   return (
     <ErrorBoundary>
       {width <= 786 ? (
