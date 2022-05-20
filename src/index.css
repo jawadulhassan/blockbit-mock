@@ -18,3 +18,22 @@ code {
 iframe {
   pointer-events: none;
 }
+
+.is-error {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white !important;
+  background-color: red;
+  height: 70px;
+  width: 100%;
+
+  font-family: Assistant;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px !important;
+  line-height: 20px !important;
+  text-align: center;
+  margin-bottom: 10px;
+}
