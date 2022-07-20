@@ -12,6 +12,8 @@ export const LocationDisplay = withRouter(({ location }) => (
   <div data-testid="location-display">{location.pathname}</div>
 ));
 
+// TODO: Catch message (Server internal)
+
 const App = () => {
   return (
     <Router>
