@@ -30,7 +30,6 @@ const BotItem: FC<any> = (props: any): any => {
     // investment,
     setSelectedBot,
     getAddedBotList,
-    setSelectedStep,
     algoTradingPlanID,
   } = props;
   const { addToast } = useToasts();

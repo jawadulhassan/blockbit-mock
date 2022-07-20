@@ -87,7 +87,6 @@ const TableRow: FC<any> = (props: any): any => {
     setSelectedBot,
     tradingStrategy,
     allRowsSelected,
-    setSelectedStep,
     getAddedBotList,
     algoTradingPlanID,
   } = props;
