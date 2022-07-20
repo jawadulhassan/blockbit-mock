@@ -66,7 +66,6 @@ const BotItem: FC<any> = (props: any): any => {
         border={selectedRow}
         onClick={(): void => {
           setSelectedBot(algoTradingPlanID);
-          setSelectedStep(3);
         }}
         onMouseEnter={(): void => setSelectedRow(true)}
         onMouseLeave={(): void => setSelectedRow(false)}

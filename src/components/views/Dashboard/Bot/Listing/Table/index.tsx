@@ -128,7 +128,6 @@ const TableRow: FC<any> = (props: any): any => {
       <tr
         onClick={(): void => {
           setSelectedBot(algoTradingPlanID);
-          setSelectedStep(3);
         }}
         className="pointer"
         onMouseEnter={(): void => setSelectedRow(true)}
