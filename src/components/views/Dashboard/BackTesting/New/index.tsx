@@ -245,7 +245,7 @@ const BackTesting: FC<any> = ({
             />
             <FlexRow justifyContent="space-between" width="48%">
               <FlexColumn width="48%">
-                <Label className="dropdown-label">"Start Date"</Label>
+                <Label className="dropdown-label">Start Date</Label>
                 <TextInput
                   type="date"
                   max={dateToday}
@@ -270,7 +270,7 @@ const BackTesting: FC<any> = ({
               </FlexColumn>
 
               <FlexColumn width="48%">
-                <Label className="dropdown-label">"End Date"</Label>
+                <Label className="dropdown-label">End Date</Label>
                 <TextInput
                   type="date"
                   name="endDate"
