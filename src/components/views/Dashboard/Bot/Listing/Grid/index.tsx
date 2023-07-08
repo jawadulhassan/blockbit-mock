@@ -3,12 +3,8 @@ import React, { Fragment, FC } from 'react';
 import BotItem from 'components/widgets/BotItem';
 
 const Grid: FC<any> = (props: any): any => {
-  const {
-    botTableData,
-    setSelectedBot,
-    getAddedBotList,
-    setSelectedStep,
-  } = props;
+  const { botTableData, setSelectedBot, getAddedBotList, setSelectedStep } =
+    props;
   return (
     <div className="flexed-wrapped">
       {botTableData.map(
