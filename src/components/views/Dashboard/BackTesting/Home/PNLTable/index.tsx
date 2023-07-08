@@ -7,6 +7,7 @@ import Calender from 'components/widgets/Calender';
 import DeleteExchange from 'components/modals/DeleteExchange';
 
 const Table: FC<any> = ({ individualData }: any): any => {
+  
   return (
     <div className="table-responsive mt-4">
       <FlexRow
