@@ -9,6 +9,8 @@
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
     "axios": "^0.19.2",
     "date-fns": "^2.16.1",
     "highcharts": "^8.2.0",
@@ -16,7 +18,7 @@
     "jest-dom": "^4.0.0",
     "msw": "^0.20.5",
     "query-string": "^6.13.1",
-    "react": "^17.0.2",
+    "react": "^16.14.0",
     "react-content-loader": "^6.0.2",
     "react-dom": "^16.14.0",
     "react-google-recaptcha-v3": "^1.5.2",
@@ -36,12 +38,12 @@
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.1",
     "styled-theming": "^2.2.0",
-    "typescript": "~3.7.2"
+    "typescript": "^5.2.2"
   },
   "scripts": {
     "start": "export SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
     "build": "export SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
-    "test": "react-scripts test",
+    "test": "export SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts test",
     "eject": "react-scripts eject",
     "lint:ts": "tslint 'src/**/*.{ts,tsx,js}'"
   },
