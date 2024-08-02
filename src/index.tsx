@@ -8,19 +8,19 @@ import App from './App';
 import { MyThemeProvider } from './ThemeContext';
 import * as serviceWorker from './serviceWorker';
 
+// Environment variable check
+const recaptchaKey = process.env.REACT_APP_RECAPTCHA_KEY || '';
+
 ReactDOM.render(
-  <React.Fragment>
-    <GoogleReCaptchaProvider
-      useRecaptchaNet={true}
-      reCaptchaKey={`${process.env.REACT_APP_RECAPTCHA_KEY}`}
-    >
+  <React.StrictMode>
+    <GoogleReCaptchaProvider useRecaptchaNet reCaptchaKey={recaptchaKey}>
       <ToastProvider autoDismissTimeout={10000}>
         <MyThemeProvider>
           <App />
         </MyThemeProvider>
       </ToastProvider>
     </GoogleReCaptchaProvider>
-  </React.Fragment>,
+  </React.StrictMode>,
   document.getElementById('root')
 );
 

@@ -9,8 +9,6 @@
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
     "axios": "^0.19.2",
     "date-fns": "^2.16.1",
     "highcharts": "^8.2.0",
@@ -68,6 +66,8 @@
   "devDependencies": {
     "@testing-library/react": "^9.5.0",
     "@types/react": "^16.9.43",
+    "@typescript-eslint/eslint-plugin": "^6.7.6-alpha.2",
+    "@typescript-eslint/parser": "^6.7.6-alpha.2",
     "eslint-config-react-app": "^6.0.0",
     "history": "^5.0.0",
     "prettier": "^2.0.5",
